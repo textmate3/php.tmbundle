@@ -1,4 +1,4 @@
-#!/usr/local/opt/ruby187/bin/ruby -wKU
+#!/usr/bin/env ruby -w
 
 # Generate grammar selectors from the PHP docs JSON file produced by generate.php
 #
@@ -7,10 +7,14 @@
 #
 # Usage: generate.rb jsonFile
 
-require 'rubygems'
 require 'json'
-require '~/Library/Application Support/TextMate/Bundles/php.tmbundle/Support/lib/Builder'
-require '~/Library/Application Support/TextMate/Bundles/bundle-support.tmbundle/Support/shared/lib/osx/plist'
+require_relative '../lib/Builder'
+
+# The plist shim comes from Bundle Support. TextMate provides TM_SUPPORT_PATH
+# when running inside the editor. From a terminal, default it to the sibling
+# bundle-support.tmbundle checkout.
+ENV['TM_SUPPORT_PATH'] ||= File.expand_path('../../../bundle-support.tmbundle/Support/shared', __dir__)
+require "#{ENV['TM_SUPPORT_PATH']}/private/plist"
 
 data = JSON.parse(File.read(ARGV[0]))
 
@@ -82,7 +86,7 @@ end
 
 GrammarPath = File.dirname(__FILE__) + '/../../Syntaxes/PHP.plist'
 
-grammar = OSX::PropertyList.load(File.read(GrammarPath))
+grammar = Plist.load(File.read(GrammarPath))
 
 patterns = []
 
